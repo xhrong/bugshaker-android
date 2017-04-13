@@ -28,11 +28,13 @@ public final class CustomApplication extends Application {
         super.onCreate();
 
         BugShaker.get(this)
-                 .setEmailAddresses("someone@example.com")
-                 .setLoggingEnabled(BuildConfig.DEBUG)
-                 .setAlertDialogType(AlertDialogType.APP_COMPAT)
-                 .assemble()
-                 .start();
+                .setEmailAddresses("someone@example.com")
+                .setLoggingEnabled(BuildConfig.DEBUG)
+                .setAlertDialogType(AlertDialogType.APP_COMPAT)
+                .setLogFilePath("your log file/file path")
+                .assemble()
+
+                .start();
     }
 
 }
