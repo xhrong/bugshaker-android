@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 
+import com.github.stkent.bugshaker.flow.email.Environment;
 import com.github.stkent.bugshaker.utilities.Logger;
 
 import java.io.BufferedOutputStream;
@@ -98,7 +99,7 @@ import rx.Subscriber;
     private static File getScreenshotFile(@NonNull final Context applicationContext) {
         final File screenshotsDir = new File(
                 applicationContext.getFilesDir(), SCREENSHOTS_DIRECTORY_NAME);
-
+     //   final File screenshotsDir = new File(android.os.Environment.getExternalStorageDirectory(), SCREENSHOTS_DIRECTORY_NAME);
         //noinspection ResultOfMethodCallIgnored
         screenshotsDir.mkdirs();
 

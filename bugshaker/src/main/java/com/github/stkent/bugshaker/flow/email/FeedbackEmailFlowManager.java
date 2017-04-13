@@ -76,6 +76,7 @@ public final class FeedbackEmailFlowManager {
     private String[] emailAddresses;
     private String emailSubjectLine;
     private boolean ignoreFlagSecure;
+    private String logFilePath;
 
     private final OnClickListener reportBugClickListener = new OnClickListener() {
         @Override
@@ -160,6 +161,13 @@ public final class FeedbackEmailFlowManager {
             @NonNull final String[] emailAddresses,
             @Nullable final String emailSubjectLine,
             final boolean ignoreFlagSecure) {
+        startFlowIfNeeded(emailAddresses, emailSubjectLine, ignoreFlagSecure, "");
+    }
+
+    public void startFlowIfNeeded(
+            @NonNull final String[] emailAddresses,
+            @Nullable final String emailSubjectLine,
+            final boolean ignoreFlagSecure, final String logFilePath) {
 
         if (isFeedbackFlowStarted()) {
             logger.d("Feedback flow already started; ignoring shake.");
@@ -169,6 +177,7 @@ public final class FeedbackEmailFlowManager {
         this.emailAddresses = Arrays.copyOf(emailAddresses, emailAddresses.length);
         this.emailSubjectLine = emailSubjectLine;
         this.ignoreFlagSecure = ignoreFlagSecure;
+        this.logFilePath = logFilePath;
 
         showDialog();
     }
@@ -222,28 +231,28 @@ public final class FeedbackEmailFlowManager {
         final Intent feedbackEmailIntent = feedbackEmailIntentProvider.getFeedbackEmailIntent(
                 emailAddresses,
                 emailSubjectLine,
+                logFilePath,
                 screenshotUri);
 
         final List<ResolveInfo> resolveInfoList = applicationContext.getPackageManager()
                 .queryIntentActivities(feedbackEmailIntent, PackageManager.MATCH_DEFAULT_ONLY);
 
-        for (final ResolveInfo receivingApplicationInfo: resolveInfoList) {
+        for (final ResolveInfo receivingApplicationInfo : resolveInfoList) {
             // FIXME: revoke these permissions at some point!
             applicationContext.grantUriPermission(
                     receivingApplicationInfo.activityInfo.packageName,
                     screenshotUri,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
-
         activity.startActivity(feedbackEmailIntent);
-
         logger.d("Sending email with screenshot.");
     }
 
     private void sendEmailWithoutScreenshot(@NonNull final Activity activity) {
         final Intent feedbackEmailIntent = feedbackEmailIntentProvider.getFeedbackEmailIntent(
                 emailAddresses,
-                emailSubjectLine);
+                emailSubjectLine,
+                logFilePath);
 
         activity.startActivity(feedbackEmailIntent);
 

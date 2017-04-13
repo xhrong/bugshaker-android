@@ -20,6 +20,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import java.io.File;
+
 public final class GenericEmailIntentProvider {
 
     @NonNull
@@ -38,14 +40,15 @@ public final class GenericEmailIntentProvider {
 
     @NonNull
     /* default */ Intent getEmailWithAttachmentIntent(
-        @NonNull final String[] emailAddresses,
-        @NonNull final String emailSubjectLine,
-        @NonNull final String emailBody,
-        @NonNull final Uri attachmentUri) {
+            @NonNull final String[] emailAddresses,
+            @NonNull final String emailSubjectLine,
+            @NonNull final String emailBody,
+            @NonNull final Uri attachmentUri) {
 
         final Intent result = getEmailIntent(emailAddresses, emailSubjectLine, emailBody);
 
-        result.putExtra(Intent.EXTRA_STREAM, attachmentUri);
+        File file=new File(android.os.Environment.getExternalStorageDirectory()+"/mcs.log");
+        result.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
 
         return result;
     }

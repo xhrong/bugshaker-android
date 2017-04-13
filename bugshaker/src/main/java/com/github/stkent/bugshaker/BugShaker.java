@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.hardware.SensorManager;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.github.stkent.bugshaker.flow.dialog.AlertDialogType;
 import com.github.stkent.bugshaker.flow.dialog.AppCompatDialogProvider;
@@ -60,11 +61,12 @@ public final class BugShaker implements ShakeDetector.Listener {
     private String[] emailAddresses;
     private String emailSubjectLine;
     private AlertDialogType alertDialogType = AlertDialogType.NATIVE;
-    private boolean ignoreFlagSecure        = false;
-    private boolean loggingEnabled          = false;
+    private boolean ignoreFlagSecure = false;
+    private boolean loggingEnabled = false;
+    private String logFilePath = "";
 
     // Instance configuration state:
-    private boolean assembled      = false;
+    private boolean assembled = false;
     private boolean startAttempted = false;
 
     private final SimpleActivityLifecycleCallback simpleActivityLifecycleCallback = new SimpleActivityLifecycleCallback() {
@@ -115,6 +117,18 @@ public final class BugShaker implements ShakeDetector.Listener {
         this.emailAddresses = emailAddresses;
         return this;
     }
+
+    @NonNull
+    public BugShaker setLogFilePath(@NonNull final String logFilePath) {
+        if (assembled || startAttempted) {
+            throw new IllegalStateException(
+                    "Configuration must be complete before calling assemble or start");
+        }
+
+        this.logFilePath = logFilePath;
+        return this;
+    }
+
 
     /**
      * (Optional) Defines a custom subject line to use for all bug reports. By default, reports will use the string
@@ -269,12 +283,13 @@ public final class BugShaker implements ShakeDetector.Listener {
         feedbackEmailFlowManager.startFlowIfNeeded(
                 emailAddresses,
                 emailSubjectLine,
-                ignoreFlagSecure);
+                ignoreFlagSecure,
+                logFilePath);
     }
 
     /**
      * @return a MapScreenshotProvider if the embedding application utilizes the Google Maps Android API, and a
-     *         BasicScreenshotProvider otherwise
+     * BasicScreenshotProvider otherwise
      */
     @NonNull
     private ScreenshotProvider getScreenshotProvider() {
